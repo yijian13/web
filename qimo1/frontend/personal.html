@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人中心 - 图书借阅管理系统</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .navbar {
+      background-color: #343a40;
+    }
+    .personal-center {
+      margin: 40px 0;
+    }
+    .sidebar {
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+    }
+    .nav-link {
+      margin-bottom: 10px;
+    }
+    .content {
+      padding: 20px;
+      border: 1px solid #e9ecef;
+      border-radius: 5px;
+    }
+    .section-title {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .profile-info {
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .footer {
+      background-color: #343a40;
+      color: white;
+      padding: 20px 0;
+      margin-top: 40px;
+    }
+    .record-item {
+      margin-bottom: 15px;
+      padding: 15px;
+      border: 1px solid #e9ecef;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">图书借阅管理系统</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">首页</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="books.html">图书信息</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="news.html">图书资讯</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="notifications.html">通知公告</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown" id="user-dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+              <span id="user-name"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="personal.html">个人中心</a></li>
+              <li><a class="dropdown-item" href="#" id="logout-btn">退出登录</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="personal-center">
+      <div class="row">
+        <!-- 侧边栏 -->
+        <div class="col-md-3">
+          <div class="sidebar">
+            <h3>个人中心</h3>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="#profile" data-target="profile">个人信息</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#borrow" data-target="borrow">借阅信息</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#return" data-target="return">归还信息</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#collection" data-target="collection">我的收藏</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#password" data-target="password">修改密码</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="col-md-9">
+          <div class="content">
+            <!-- 个人信息 -->
+            <div id="profile-content">
+              <h2 class="section-title">个人信息</h2>
+              <div class="profile-info">
+                <form id="profile-form">
+                  <div class="form-group">
+                    <label for="name">姓名</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                  </div>
+                  <div class="form-group">
+                    <label for="email">邮箱</label>
+                    <input type="email" class="form-control" id="email" name="email">
+                  </div>
+                  <button type="submit" class="btn btn-primary">保存修改</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- 借阅信息 -->
+            <div id="borrow-content" style="display: none;">
+              <h2 class="section-title">借阅信息</h2>
+              <div id="borrow-records">
+                <!-- 借阅记录将通过JavaScript动态加载 -->
+              </div>
+            </div>
+
+            <!-- 归还信息 -->
+            <div id="return-content" style="display: none;">
+              <h2 class="section-title">归还信息</h2>
+              <div id="return-records">
+                <!-- 归还记录将通过JavaScript动态加载 -->
+              </div>
+            </div>
+
+            <!-- 我的收藏 -->
+            <div id="collection-content" style="display: none;">
+              <h2 class="section-title">我的收藏</h2>
+              <div id="collections">
+                <!-- 收藏记录将通过JavaScript动态加载 -->
+              </div>
+            </div>
+
+            <!-- 修改密码 -->
+            <div id="password-content" style="display: none;">
+              <h2 class="section-title">修改密码</h2>
+              <form id="password-form">
+                <div class="form-group">
+                  <label for="old-password">原密码</label>
+                  <input type="password" class="form-control" id="old-password" name="old_password" required>
+                </div>
+                <div class="form-group">
+                  <label for="new-password">新密码</label>
+                  <input type="password" class="form-control" id="new-password" name="new_password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">修改密码</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h4>关于我们</h4>
+          <p>我们是一个致力于为读者提供优质图书资源的图书馆。</p>
+        </div>
+        <div class="col-md-4">
+          <h4>联系方式</h4>
+          <p>电话：12345678900</p>
+          <p>邮箱：contact@library.com</p>
+        </div>
+        <div class="col-md-4">
+          <h4>快速链接</h4>
+          <ul class="list-unstyled">
+            <li><a href="index.html" class="text-white">首页</a></li>
+            <li><a href="books.html" class="text-white">图书信息</a></li>
+            <li><a href="news.html" class="text-white">图书资讯</a></li>
+            <li><a href="notifications.html" class="text-white">通知公告</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <p>&copy; 2026 图书借阅管理系统. 保留所有权利.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 检查登录状态
+    function checkLogin() {
+      const token = localStorage.getItem('token');
+      const userStr = localStorage.getItem('user');
+      if (!token || !userStr) {
+        window.location.href = 'login.html';
+        return false;
+      }
+      const user = JSON.parse(userStr);
+      document.getElementById('user-name').textContent = user.name || user.username;
+      return true;
+    }
+
+    // 退出登录
+    document.getElementById('logout-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    });
+
+    // 加载个人信息
+    function loadProfile() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/user/info', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const user = data.data;
+          document.getElementById('name').value = user.name || '';
+          document.getElementById('email').value = user.email || '';
+        }
+      })
+      .catch(error => console.error('加载个人信息失败:', error));
+    }
+
+    // 保存个人信息
+    document.getElementById('profile-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+
+      fetch('http://localhost:3000/api/user/info', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify({ name, email })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          alert('保存成功');
+          // 更新本地存储的用户信息
+          const userStr = localStorage.getItem('user');
+          const user = JSON.parse(userStr);
+          user.name = name;
+          user.email = email;
+          localStorage.setItem('user', JSON.stringify(user));
+          document.getElementById('user-name').textContent = name || user.username;
+        }
+      })
+      .catch(error => console.error('保存个人信息失败:', error));
+    });
+
+    // 加载借阅记录
+    function loadBorrowRecords() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/user/borrow-records', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const records = data.data;
+          const borrowRecords = document.getElementById('borrow-records');
+          borrowRecords.innerHTML = '';
+          
+          if (records.length === 0) {
+            borrowRecords.innerHTML = '<p>暂无借阅记录</p>';
+            return;
+          }
+
+          records.forEach(record => {
+            const recordItem = document.createElement('div');
+            recordItem.className = 'record-item';
+            recordItem.innerHTML = `
+              <h5>${record.book ? record.book.title : '未知图书'}</h5>
+              <p><strong>借阅日期:</strong> ${new Date(record.borrow_date).toLocaleString()}</p>
+              <p><strong>状态:</strong> ${record.status}</p>
+              ${record.status === '已借出' ? `<button class="btn btn-primary return-btn" data-id="${record.id}">还书</button>` : ''}
+            `;
+            borrowRecords.appendChild(recordItem);
+          });
+
+          // 绑定还书按钮事件
+          document.querySelectorAll('.return-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const borrowId = this.getAttribute('data-id');
+              returnBook(borrowId);
+            });
+          });
+        }
+      })
+      .catch(error => console.error('加载借阅记录失败:', error));
+    }
+
+    // 还书
+    function returnBook(borrowId) {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/return', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify({ borrow_id: borrowId })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          alert('还书成功');
+          loadBorrowRecords();
+          loadReturnRecords();
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(error => console.error('还书失败:', error));
+    }
+
+    // 加载归还记录
+    function loadReturnRecords() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/user/return-records', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const records = data.data;
+          const returnRecords = document.getElementById('return-records');
+          returnRecords.innerHTML = '';
+          
+          if (records.length === 0) {
+            returnRecords.innerHTML = '<p>暂无归还记录</p>';
+            return;
+          }
+
+          records.forEach(record => {
+            const recordItem = document.createElement('div');
+            recordItem.className = 'record-item';
+            recordItem.innerHTML = `
+              <h5>${record.book ? record.book.title : '未知图书'}</h5>
+              <p><strong>归还日期:</strong> ${new Date(record.return_date).toLocaleString()}</p>
+              <p><strong>状态:</strong> ${record.status}</p>
+            `;
+            returnRecords.appendChild(recordItem);
+          });
+        }
+      })
+      .catch(error => console.error('加载归还记录失败:', error));
+    }
+
+    // 加载收藏
+    function loadCollections() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/user/collections', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const collections = data.data;
+          const collectionsContainer = document.getElementById('collections');
+          collectionsContainer.innerHTML = '';
+          
+          if (collections.length === 0) {
+            collectionsContainer.innerHTML = '<p>暂无收藏</p>';
+            return;
+          }
+
+          collections.forEach(col => {
+            if (col.book) {
+              const collectionItem = document.createElement('div');
+              collectionItem.className = 'record-item';
+              collectionItem.innerHTML = `
+                <h5>${col.book.title}</h5>
+                <p>作者: ${col.book.author}</p>
+                <a href="book-detail.html?id=${col.book.id}" class="btn btn-primary">查看详情</a>
+              `;
+              collectionsContainer.appendChild(collectionItem);
+            }
+          });
+        }
+      })
+      .catch(error => console.error('加载收藏失败:', error));
+    }
+
+    // 修改密码
+    document.getElementById('password-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+      const oldPassword = document.getElementById('old-password').value;
+      const newPassword = document.getElementById('new-password').value;
+
+      fetch('http://localhost:3000/api/user/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          alert('密码修改成功');
+          document.getElementById('password-form').reset();
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(error => console.error('修改密码失败:', error));
+    });
+
+    // 导航切换
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = this.getAttribute('data-target');
+        
+        // 移除所有活动状态
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('[id$="-content"]').forEach(c => c.style.display = 'none');
+        
+        // 激活当前项
+        this.classList.add('active');
+        document.getElementById(target + '-content').style.display = 'block';
+        
+        // 加载对应内容
+        if (target === 'profile') {
+          loadProfile();
+        } else if (target === 'borrow') {
+          loadBorrowRecords();
+        } else if (target === 'return') {
+          loadReturnRecords();
+        } else if (target === 'collection') {
+          loadCollections();
+        }
+      });
+    });
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      if (checkLogin()) {
+        loadProfile();
+      }
+    });
+  </script>
+</body>
+</html>

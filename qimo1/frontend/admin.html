@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理员后台 - 图书借阅管理系统</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .navbar {
+      background-color: #343a40;
+    }
+    .admin-center {
+      margin: 40px 0;
+    }
+    .sidebar {
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+    }
+    .nav-link {
+      margin-bottom: 10px;
+    }
+    .content {
+      padding: 20px;
+      border: 1px solid #e9ecef;
+      border-radius: 5px;
+    }
+    .section-title {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .footer {
+      background-color: #343a40;
+      color: white;
+      padding: 20px 0;
+      margin-top: 40px;
+    }
+    .record-item {
+      margin-bottom: 15px;
+      padding: 15px;
+      border: 1px solid #e9ecef;
+      border-radius: 5px;
+    }
+    .table {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">图书借阅管理系统</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">首页</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown" id="user-dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+              <span id="user-name"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="personal.html">个人中心</a></li>
+              <li><a class="dropdown-item" href="#" id="logout-btn">退出登录</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="admin-center">
+      <div class="row">
+        <!-- 侧边栏 -->
+        <div class="col-md-3">
+          <div class="sidebar">
+            <h3>管理员后台</h3>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="#users" data-target="users">用户管理</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#books" data-target="books">图书管理</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#borrow" data-target="borrow">借阅管理</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#return" data-target="return">归还管理</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#notifications" data-target="notifications">通知公告</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#news" data-target="news">图书资讯</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="col-md-9">
+          <div class="content">
+            <!-- 用户管理 -->
+            <div id="users-content">
+              <h2 class="section-title">用户管理</h2>
+              <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">添加用户</button>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>用户名</th>
+                    <th>姓名</th>
+                    <th>邮箱</th>
+                    <th>角色</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table">
+                  <!-- 用户列表将通过JavaScript动态加载 -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 图书管理 -->
+            <div id="books-content" style="display: none;">
+              <h2 class="section-title">图书管理</h2>
+              <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addBookModal">添加图书</button>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>书名</th>
+                    <th>作者</th>
+                    <th>分类</th>
+                    <th>出版日期</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="books-table">
+                  <!-- 图书列表将通过JavaScript动态加载 -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 借阅管理 -->
+            <div id="borrow-content" style="display: none;">
+              <h2 class="section-title">借阅管理</h2>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>用户</th>
+                    <th>图书</th>
+                    <th>借阅日期</th>
+                    <th>状态</th>
+                  </tr>
+                </thead>
+                <tbody id="borrow-table">
+                  <!-- 借阅记录将通过JavaScript动态加载 -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 归还管理 -->
+            <div id="return-content" style="display: none;">
+              <h2 class="section-title">归还管理</h2>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>用户</th>
+                    <th>图书</th>
+                    <th>归还日期</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="return-table">
+                  <!-- 归还记录将通过JavaScript动态加载 -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 通知公告 -->
+            <div id="notifications-content" style="display: none;">
+              <h2 class="section-title">通知公告</h2>
+              <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addNotificationModal">添加通知</button>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>标题</th>
+                    <th>创建日期</th>
+                  </tr>
+                </thead>
+                <tbody id="notifications-table">
+                  <!-- 通知列表将通过JavaScript动态加载 -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 图书资讯 -->
+            <div id="news-content" style="display: none;">
+              <h2 class="section-title">图书资讯</h2>
+              <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addNewsModal">添加资讯</button>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>标题</th>
+                    <th>创建日期</th>
+                  </tr>
+                </thead>
+                <tbody id="news-table">
+                  <!-- 资讯列表将通过JavaScript动态加载 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加用户模态框 -->
+  <div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">添加用户</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addUserForm">
+            <div class="form-group">
+              <label for="user-username">用户名</label>
+              <input type="text" class="form-control" id="user-username" name="username" required>
+            </div>
+            <div class="form-group">
+              <label for="user-password">密码</label>
+              <input type="password" class="form-control" id="user-password" name="password" required>
+            </div>
+            <div class="form-group">
+              <label for="user-name">姓名</label>
+              <input type="text" class="form-control" id="user-name" name="name">
+            </div>
+            <div class="form-group">
+              <label for="user-email">邮箱</label>
+              <input type="email" class="form-control" id="user-email" name="email">
+            </div>
+            <div class="form-group">
+              <label for="user-role">角色</label>
+              <select class="form-control" id="user-role" name="role">
+                <option value="user">普通用户</option>
+                <option value="admin">管理员</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" id="submitUser">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加图书模态框 -->
+  <div class="modal fade" id="addBookModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">添加图书</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addBookForm">
+            <div class="form-group">
+              <label for="book-title">书名</label>
+              <input type="text" class="form-control" id="book-title" name="title" required>
+            </div>
+            <div class="form-group">
+              <label for="book-author">作者</label>
+              <input type="text" class="form-control" id="book-author" name="author" required>
+            </div>
+            <div class="form-group">
+              <label for="book-category">分类</label>
+              <select class="form-control" id="book-category" name="category_id">
+                <option value="1">计算机科学</option>
+                <option value="2">文学</option>
+                <option value="3">历史</option>
+                <option value="4">艺术</option>
+                <option value="5">科学</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="book-publish-date">出版日期</label>
+              <input type="date" class="form-control" id="book-publish-date" name="publish_date" required>
+            </div>
+            <div class="form-group">
+              <label for="book-description">简介</label>
+              <textarea class="form-control" id="book-description" name="description" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" id="submitBook">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加通知模态框 -->
+  <div class="modal fade" id="addNotificationModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">添加通知</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addNotificationForm">
+            <div class="form-group">
+              <label for="notification-title">标题</label>
+              <input type="text" class="form-control" id="notification-title" name="title" required>
+            </div>
+            <div class="form-group">
+              <label for="notification-content">内容</label>
+              <textarea class="form-control" id="notification-content" name="content" rows="4" required></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" id="submitNotification">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加资讯模态框 -->
+  <div class="modal fade" id="addNewsModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">添加资讯</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addNewsForm">
+            <div class="form-group">
+              <label for="news-title">标题</label>
+              <input type="text" class="form-control" id="news-title" name="title" required>
+            </div>
+            <div class="form-group">
+              <label for="news-content">内容</label>
+              <textarea class="form-control" id="news-content" name="content" rows="4" required></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" id="submitNews">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h4>关于我们</h4>
+          <p>我们是一个致力于为读者提供优质图书资源的图书馆。</p>
+        </div>
+        <div class="col-md-4">
+          <h4>联系方式</h4>
+          <p>电话：12345678900</p>
+          <p>邮箱：contact@library.com</p>
+        </div>
+        <div class="col-md-4">
+          <h4>快速链接</h4>
+          <ul class="list-unstyled">
+            <li><a href="index.html" class="text-white">首页</a></li>
+            <li><a href="books.html" class="text-white">图书信息</a></li>
+            <li><a href="news.html" class="text-white">图书资讯</a></li>
+            <li><a href="notifications.html" class="text-white">通知公告</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <p>&copy; 2026 图书借阅管理系统. 保留所有权利.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 检查登录状态
+    function checkLogin() {
+      const token = localStorage.getItem('token');
+      const userStr = localStorage.getItem('user');
+      if (!token || !userStr) {
+        window.location.href = 'login.html';
+        return false;
+      }
+      const user = JSON.parse(userStr);
+      if (user.role !== 'admin') {
+        window.location.href = 'index.html';
+        return false;
+      }
+      document.getElementById('user-name').textContent = user.name || user.username;
+      return true;
+    }
+
+    // 退出登录
+    document.getElementById('logout-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    });
+
+    // 加载用户列表
+    function loadUsers() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/admin/users', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const users = data.data;
+          const usersTable = document.getElementById('users-table');
+          usersTable.innerHTML = '';
+          users.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${user.id}</td>
+              <td>${user.username}</td>
+              <td>${user.name || user.username}</td>
+              <td>${user.email || '-'}</td>
+              <td>${user.role}</td>
+              <td><button class="btn btn-danger delete-user" data-id="${user.id}">删除</button></td>
+            `;
+            usersTable.appendChild(row);
+          });
+
+          // 绑定删除事件
+          document.querySelectorAll('.delete-user').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const userId = this.getAttribute('data-id');
+              if (confirm('确定要删除这个用户吗？')) {
+                deleteUser(userId);
+              }
+            });
+          });
+        }
+      })
+      .catch(error => console.error('加载用户列表失败:', error));
+    }
+
+    // 删除用户
+    function deleteUser(userId) {
+      const token = localStorage.getItem('token');
+      fetch(`http://localhost:3000/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          loadUsers();
+        }
+      })
+      .catch(error => console.error('删除用户失败:', error));
+    }
+
+    // 加载图书列表
+    function loadBooks() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/books', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const books = data.data;
+          const booksTable = document.getElementById('books-table');
+          booksTable.innerHTML = '';
+          books.forEach(book => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${book.id}</td>
+              <td>${book.title}</td>
+              <td>${book.author}</td>
+              <td>${getCategoryName(book.category_id)}</td>
+              <td>${book.publish_date}</td>
+              <td><button class="btn btn-danger delete-book" data-id="${book.id}">删除</button></td>
+            `;
+            booksTable.appendChild(row);
+          });
+
+          // 绑定删除事件
+          document.querySelectorAll('.delete-book').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const bookId = this.getAttribute('data-id');
+              if (confirm('确定要删除这本书吗？')) {
+                deleteBook(bookId);
+              }
+            });
+          });
+        }
+      })
+      .catch(error => console.error('加载图书列表失败:', error));
+    }
+
+    // 删除图书
+    function deleteBook(bookId) {
+      const token = localStorage.getItem('token');
+      fetch(`http://localhost:3000/api/admin/books/${bookId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          loadBooks();
+        }
+      })
+      .catch(error => console.error('删除图书失败:', error));
+    }
+
+    // 加载借阅记录
+    function loadBorrowRecords() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/admin/borrow-records', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const records = data.data;
+          const borrowTable = document.getElementById('borrow-table');
+          borrowTable.innerHTML = '';
+          records.forEach(record => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${record.id}</td>
+              <td>${record.user ? record.user.name || record.user.username : '未知用户'}</td>
+              <td>${record.book ? record.book.title : '未知图书'}</td>
+              <td>${new Date(record.borrow_date).toLocaleString()}</td>
+              <td>${record.status}</td>
+            `;
+            borrowTable.appendChild(row);
+          });
+        }
+      })
+      .catch(error => console.error('加载借阅记录失败:', error));
+    }
+
+    // 加载归还记录
+    function loadReturnRecords() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/admin/return-records', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const records = data.data;
+          const returnTable = document.getElementById('return-table');
+          returnTable.innerHTML = '';
+          records.forEach(record => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${record.id}</td>
+              <td>${record.user ? record.user.name || record.user.username : '未知用户'}</td>
+              <td>${record.book ? record.book.title : '未知图书'}</td>
+              <td>${new Date(record.return_date).toLocaleString()}</td>
+              <td>${record.status}</td>
+              ${record.status === '待审核' ? `<td><button class="btn btn-primary approve-return" data-id="${record.id}">审核通过</button></td>` : '<td>-</td>'}
+            `;
+            returnTable.appendChild(row);
+          });
+
+          // 绑定审核事件
+          document.querySelectorAll('.approve-return').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const returnId = this.getAttribute('data-id');
+              approveReturn(returnId);
+            });
+          });
+        }
+      })
+      .catch(error => console.error('加载归还记录失败:', error));
+    }
+
+    // 审核归还
+    function approveReturn(returnId) {
+      const token = localStorage.getItem('token');
+      fetch(`http://localhost:3000/api/admin/return-records/${returnId}/approve`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          loadReturnRecords();
+        }
+      })
+      .catch(error => console.error('审核归还失败:', error));
+    }
+
+    // 加载通知公告
+    function loadNotifications() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/notifications', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const notifications = data.data;
+          const notificationsTable = document.getElementById('notifications-table');
+          notificationsTable.innerHTML = '';
+          notifications.forEach(notification => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${notification.id}</td>
+              <td>${notification.title}</td>
+              <td>${new Date(notification.created_at).toLocaleString()}</td>
+            `;
+            notificationsTable.appendChild(row);
+          });
+        }
+      })
+      .catch(error => console.error('加载通知公告失败:', error));
+    }
+
+    // 加载图书资讯
+    function loadNews() {
+      const token = localStorage.getItem('token');
+      fetch('http://localhost:3000/api/book-news', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          const news = data.data;
+          const newsTable = document.getElementById('news-table');
+          newsTable.innerHTML = '';
+          news.forEach(newsItem => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${newsItem.id}</td>
+              <td>${newsItem.title}</td>
+              <td>${new Date(newsItem.created_at).toLocaleString()}</td>
+            `;
+            newsTable.appendChild(row);
+          });
+        }
+      })
+      .catch(error => console.error('加载图书资讯失败:', error));
+    }
+
+    // 获取分类名称
+    function getCategoryName(categoryId) {
+      const categories = {
+        1: '计算机科学',
+        2: '文学',
+        3: '历史',
+        4: '艺术',
+        5: '科学'
+      };
+      return categories[categoryId] || '未知分类';
+    }
+
+    // 提交用户表单
+    document.getElementById('submitUser').addEventListener('click', function() {
+      const token = localStorage.getItem('token');
+      const form = document.getElementById('addUserForm');
+      const formData = new FormData(form);
+      const userData = {
+        username: formData.get('username'),
+        password: formData.get('password'),
+        name: formData.get('name'),
+        email: formData.get('email'),
+        role: formData.get('role')
+      };
+
+      fetch('http://localhost:3000/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify(userData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          loadUsers();
+          // 关闭模态框
+          const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+          modal.hide();
+          form.reset();
+        }
+      })
+      .catch(error => console.error('添加用户失败:', error));
+    });
+
+    // 提交图书表单
+    document.getElementById('submitBook').addEventListener('click', function() {
+      const token = localStorage.getItem('token');
+      const form = document.getElementById('addBookForm');
+      const formData = new FormData(form);
+      const bookData = {
+        title: formData.get('title'),
+        author: formData.get('author'),
+        category_id: formData.get('category_id'),
+        publish_date: formData.get('publish_date'),
+        description: formData.get('description')
+      };
+
+      fetch('http://localhost:3000/api/admin/books', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify(bookData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          loadBooks();
+          // 关闭模态框
+          const modal = bootstrap.Modal.getInstance(document.getElementById('addBookModal'));
+          modal.hide();
+          form.reset();
+        }
+      })
+      .catch(error => console.error('添加图书失败:', error));
+    });
+
+    // 提交通知表单
+    document.getElementById('submitNotification').addEventListener('click', function() {
+      const token = localStorage.getItem('token');
+      const form = document.getElementById('addNotificationForm');
+      const formData = new FormData(form);
+      const notificationData = {
+        title: formData.get('title'),
+        content: formData.get('content')
+      };
+
+      fetch('http://localhost:3000/api/admin/notifications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify(notificationData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          loadNotifications();
+          // 关闭模态框
+          const modal = bootstrap.Modal.getInstance(document.getElementById('addNotificationModal'));
+          modal.hide();
+          form.reset();
+        }
+      })
+      .catch(error => console.error('添加通知失败:', error));
+    });
+
+    // 提交资讯表单
+    document.getElementById('submitNews').addEventListener('click', function() {
+      const token = localStorage.getItem('token');
+      const form = document.getElementById('addNewsForm');
+      const formData = new FormData(form);
+      const newsData = {
+        title: formData.get('title'),
+        content: formData.get('content')
+      };
+
+      fetch('http://localhost:3000/api/admin/book-news', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token
+        },
+        body: JSON.stringify(newsData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          loadNews();
+          // 关闭模态框
+          const modal = bootstrap.Modal.getInstance(document.getElementById('addNewsModal'));
+          modal.hide();
+          form.reset();
+        }
+      })
+      .catch(error => console.error('添加资讯失败:', error));
+    });
+
+    // 导航切换
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = this.getAttribute('data-target');
+        
+        // 移除所有活动状态
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('[id$="-content"]').forEach(c => c.style.display = 'none');
+        
+        // 激活当前项
+        this.classList.add('active');
+        document.getElementById(target + '-content').style.display = 'block';
+        
+        // 加载对应内容
+        if (target === 'users') {
+          loadUsers();
+        } else if (target === 'books') {
+          loadBooks();
+        } else if (target === 'borrow') {
+          loadBorrowRecords();
+        } else if (target === 'return') {
+          loadReturnRecords();
+        } else if (target === 'notifications') {
+          loadNotifications();
+        } else if (target === 'news') {
+          loadNews();
+        }
+      });
+    });
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      if (checkLogin()) {
+        loadUsers();
+      }
+    });
+  </script>
+</body>
+</html>
