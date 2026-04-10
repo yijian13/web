@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图书借阅管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Vue Router CDN -->
+    <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* 全局样式 */
+      body {
+        font-family: 'Microsoft YaHei', Arial, sans-serif;
+        background-color: #f8f9fa;
+      }
+
+      /* 轮播图样式 */
+      .carousel-item img {
+        height: 400px;
+        object-fit: cover;
+      }
+
+      /* 卡片样式 */
+      .book-card {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .book-cover {
+        transition: all 0.3s ease;
+        height: 250px;
+        object-fit: cover;
+      }
+
+      .book-card:hover .book-cover {
+        transform: scale(1.05);
+      }
+
+      /* 资讯和通知卡片样式 */
+      .news-card, .notification-card {
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .news-card:hover, .notification-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      /* 渐变背景 */
+      .bg-gradient {
+        background: linear-gradient(135deg, #3a5a78, #2c3e50);
+      }
+
+      /* 标题样式 */
+      .section-title {
+        position: relative;
+        margin: 40px 0 30px;
+        padding-bottom: 15px;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(135deg, #3a5a78, #2c3e50);
+      }
+
+      .section-title-text {
+        color: #3a5a78;
+      }
+
+      .section-more {
+        font-size: 14px;
+        color: #3a5a78;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .section-more:hover {
+        color: #f39c12;
+      }
+
+      /* 动画效果 */
+      .fade-in-up {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
+
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+
+      .delay-3 {
+        animation-delay: 0.3s;
+      }
+
+      /* 响应式调整 */
+      @media (max-width: 768px) {
+        .carousel-item img {
+          height: 250px;
+        }
+
+        .book-cover {
+          height: 200px;
+        }
+
+        .section-title {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .section-more {
+          margin-top: 10px;
+        }
+      }
+
+      /* 登录和注册页面样式 */
+      .login-page, .register-page {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        padding: 40px 0;
+      }
+
+      .login-card, .register-card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .login-card .card-header, .register-card .card-header {
+        padding: 1.5rem;
+      }
+
+      .login-card .card-body, .register-card .card-body {
+        padding: 2rem;
+      }
+
+      .input-group {
+        margin-bottom: 1rem;
+      }
+
+      /* 个人中心和管理员后台样式 */
+      .personal-page, .admin-page {
+        padding: 40px 0;
+      }
+
+      .personal-page .card, .admin-page .card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .personal-page .card-header, .admin-page .card-header {
+        padding: 1.5rem;
+      }
+
+      .personal-page .card-body, .admin-page .card-body {
+        padding: 2rem;
+      }
+
+      .avatar {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #3a5a78;
+      }
+
+      /* 响应式调整 */
+      @media (max-width: 768px) {
+        .login-card .card-body, .register-card .card-body {
+          padding: 1.5rem;
+        }
+
+        .personal-page .card-body, .admin-page .card-body {
+          padding: 1.5rem;
+        }
+      }
+
+      /* 管理员后台样式 */
+      .admin-page .list-group-item {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .admin-page .list-group-item:hover {
+        background-color: rgba(58, 90, 120, 0.1);
+      }
+
+      .admin-page .list-group-item.active {
+        background-color: rgba(58, 90, 120, 0.2);
+        border-left: 4px solid #3a5a78;
+        font-weight: 600;
+      }
+
+      .admin-page .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .admin-page .btn-sm {
+        margin-right: 5px;
+      }
+
+      .admin-page .table th {
+        background-color: rgba(58, 90, 120, 0.1);
+        font-weight: 600;
+      }
+
+      .admin-page .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+      }
+
+      /* 模态框样式 */
+      .modal-header {
+        background-color: #3a5a78;
+        color: white;
+      }
+
+      .modal-title {
+        font-weight: 600;
+      }
+
+      .modal-body {
+        padding: 2rem;
+      }
+
+      /* 响应式调整 */
+      @media (max-width: 768px) {
+        .admin-page .row {
+          flex-direction: column;
+        }
+
+        .admin-page .col-md-3 {
+          margin-bottom: 20px;
+        }
+
+        .admin-page .card-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .admin-page .card-header button {
+          margin-top: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="/src/main.js"></script>
+  </body>
+</html>
